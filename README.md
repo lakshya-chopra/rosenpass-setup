@@ -27,6 +27,8 @@ rustup override set stable
 ```
 ## Setup with WireGuard:
 
+for a quick wg setup, check this: [wg.md](https://github.com/lakshya-chopra/rosenpass-setup/blob/main/wg.md)
+
 1. Generate Keypairs:
 Server:
 ```sh
@@ -50,11 +52,21 @@ scp -r client@<client_ip>:~/client.rosenpass-public ~/
 3. Start the client & server:
 Server:
 ```sh
-sudo rp exchange server.rosenpass-secret dev rosenpass0 listen 127.0.0.1:9999 \
-peer client.rosenpass-public allowed-ips fe80::/64
+ sudo rp exchange server.rosenpass-secret dev rosenpass0 listen 192.168.6.233:9999 peer client.rosenpass-public allowed-ips 10.10.10.2/32
 ```
 Client:
 ```sh
-sudo rp exchange client.rosenpass-secret dev rosenpass0 \
-peer server.rosenpass-public endpoint 127.0.0.1:9999 allowed-ips fe80::/64
+ sudo rp exchange client.rosenpass-secret dev rosenpass0 peer server.rosenpass-public endpoint 192.168.6.232:9999 allowed-ips 10.10.10.3/32
+```
+4.  Test & Observe the connection:
+Ping:
+```sh
+ping 10.10.10.3
+```
+```sh
+watch -n 0.2 'sudo wg show all; sudo wg show all preshared-keys
+```
+to view the latest handshakes:
+```sh
+sudo wg show rosenpass0 latest-handshakes
 ```
