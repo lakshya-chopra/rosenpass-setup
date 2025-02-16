@@ -30,6 +30,7 @@ rustup override set stable
 for a quick wg setup, check this: [wg.md](https://github.com/lakshya-chopra/rosenpass-setup/blob/main/wg.md)
 
 1. Generate Keypairs:
+
 Server:
 ```sh
 rp genkey server.rosenpass-secret
@@ -49,15 +50,64 @@ scp -r server@<server_ip>:~/server.rosenpass-public ~/
 scp -r client@<client_ip>:~/client.rosenpass-public ~/
 ```
 
-3. Start the client & server:
-Server:
-```sh
- sudo rp exchange server.rosenpass-secret dev rosenpass0 listen 192.168.6.233:9999 peer client.rosenpass-public allowed-ips 10.10.10.2/32
-```
+3. Create `rosenpass0.conf` on both the peers:
+
 Client:
-```sh
- sudo rp exchange client.rosenpass-secret dev rosenpass0 peer server.rosenpass-public endpoint 192.168.6.232:9999 allowed-ips 10.10.10.3/32
+```conf
+[Interface]
+PrivateKey = <secret-key>
+Address = 10.10.10.2/24
+ListenPort = 51820
+
+[Peer]
+PublicKey = zQB5oIxO53rxuBy6y83kfu/A33YG8r/HXpsh32Npv2c=
+AllowedIPs = 10.10.10.3/32
+Endpoint = 192.168.6.233:51820
+PersistentKeepalive = 25
 ```
+Server:
+```conf
+[Interface]
+PrivateKey = <secret-key>
+Address = 10.10.10.3/24
+ListenPort = 51820
+
+[Peer]
+PublicKey = vp3n9ajZ7Bb6W7gTVYJkYd15DGi/eQQmVYr2s52MbWs=
+AllowedIPs = 10.10.10.2/32
+Endpoint = 192.168.6.232:51820
+PersistentKeepalive = 25
+```
+The secret & public keys can be found at: 
+1. Client:
+   
+sk: `client.rosenpass-secret/wgsk`
+pk: `client.rosenpass-public/wgpk`
+
+2. Server:
+   
+sk: `server.rosenpass-secret/wgsk`
+pk: `server.rosenpass-public/wgpk`
+
+[Turn off any other wg interface if running.]
+
+Add the IPs to the `rosenpass0` device:
+```sh
+sudo ip a add 10.10.10.2 dev rosenpass0
+```
+```sh
+sudo ip a add 10.10.10.3 dev rosenpass0
+```
+
+Run the below cmd on both the peers:
+```sh
+wg-quick up rosenpass0
+```
+
+
+![image](https://github.com/user-attachments/assets/41984a82-37ec-4d91-84f1-e7773c65b1c9)
+
+
 4.  Test & Observe the connection:
 Ping:
 ```sh
@@ -69,4 +119,8 @@ watch -n 0.2 'sudo wg show all; sudo wg show all preshared-keys
 to view the latest handshakes:
 ```sh
 sudo wg show rosenpass0 latest-handshakes
+```
+
+```sh
+sudo wg show rosenpass0 transfer
 ```
