@@ -4,7 +4,7 @@
 1. Dependencies
 ```sh
 sudo apt-get install libsodium-dev libclang-dev cmake pkg-config git build-essential
-sudo apt-get --yes install wireguard
+sudo apt-get --yes install wireguard wireguard-tools resolvconf
 ```
 Install Rust
 ```sh
