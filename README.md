@@ -20,7 +20,7 @@ sudo install target/release/rosenpass /usr/local/bin
 sudo install rp /usr/local/bin
 ```
 
-Note: If cargo build unsupported feature error, check which rust toolchain you are on & switch if needed:
+Note: If cargo build results in unsupported feature error, check which rust toolchain you are on & switch if needed:
 ```sh
 rustup show
 rustup override set stable 
@@ -124,3 +124,15 @@ sudo wg show rosenpass0 latest-handshakes
 ```sh
 sudo wg show rosenpass0 transfer
 ```
+
+**PCAP:**
+
+Captured at the endpoint IP:
+
+![image](https://github.com/user-attachments/assets/bf0948bf-22da-4681-b1b9-7e82207a47aa)
+
+This encrypted packet is however in plain-text form at `rosenpass0` (this is the case for `wg0` too).
+
+![image](https://github.com/user-attachments/assets/ab4b5ab0-5920-422b-90e8-8e18b267f394)
+
+This suggests that wg intercepts the packet at `eth0`, identifies the peer and verifies integrity via `Poly1305`. If the authentication succeeds, the packet is decrypted using `ChaCha20` and sent to the network stack (`wg0` or `rosenpass0`).
