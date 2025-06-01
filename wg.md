@@ -1,19 +1,19 @@
 # wireguard quick setup
 
-Add wg0 iface:
+### Add wg0 iface:
 ```sh
 ip link add dev wg0 type wireguard
 ```
 
-Generate keys:
+### Generate keys:
 ```sh
 wg genkey | tee privatekey | wg pubkey > publickey
 ```
-Create a `wg0.conf` file:
+### Create a Wireguard config (`wg0.conf`):
 ```sh
 sudo vim /etc/wireguard/wg0.conf
 ```
-and paste the following at the client:
+#### Paste the following at the client:
 ```conf
 [Interface]
 PrivateKey = <secret-key>
@@ -26,7 +26,7 @@ AllowedIPs = 10.10.10.3/32
 Endpoint = 192.168.6.233:51820
 PersistentKeepalive = 25
 ```
-Server:
+Repeat the same for the Server:
 ```conf
 [Interface]
 PrivateKey = <secret-key>
@@ -41,7 +41,7 @@ PersistentKeepalive = 25
 ```
 Now, we will set up the iface using `wg-quick`, we could have used `wg` as well (though it has some limitations; for example: we cannot specify `Address` in the conf).
 
-Enable & start the `wg-quick` service
+### Enable & start the `wg-quick` service
 ```sh
 sudo systemctl enable wg-quick@wg0
 sudo systemctl start wg-quick@wg0
@@ -53,7 +53,7 @@ sudo wg show
 ![image](https://github.com/user-attachments/assets/69c90db5-fafb-40f0-b510-423eed2d65cf)
 
 
-Test
+### Test
 ```sh
 ping 10.10.10.3
 ```
